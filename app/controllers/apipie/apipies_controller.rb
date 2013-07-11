@@ -4,6 +4,8 @@ module Apipie
 
     around_filter :set_script_name
 
+    helper_method :full_name_to_anchor
+
     def index
 
       params[:version] ||= Apipie.configuration.default_version
@@ -47,6 +49,9 @@ module Apipie
     end
 
     private
+    def full_name_to_anchor(name)
+      (name || "").gsub(/\W/, '_').gsub(/_$/, '')
+    end
 
     def get_format
       params[:format] = :html unless params[:version].sub!('.html', '').nil?

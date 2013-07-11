@@ -5,3 +5,12 @@ body {
 .sidebar-nav {
   padding: 9px 0;
 }
+
+.anchor {
+  color: inherit;
+}
+
+.anchor:hover {
+  text-decoration: none;
+  color: inherit;
+}
