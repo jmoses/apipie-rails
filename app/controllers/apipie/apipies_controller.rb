@@ -4,7 +4,7 @@ module Apipie
 
     around_filter :set_script_name
 
-    helper_method :full_name_to_anchor
+    helper_method :anchor_link
 
     def index
 
@@ -51,6 +51,12 @@ module Apipie
     private
     def full_name_to_anchor(name)
       (name || "").gsub(/\W/, '_').gsub(/_$/, '')
+    end
+
+    def anchor_link(name)
+      anchor = full_name_to_anchor(name)
+
+      %Q{<a class="anchor" href="##{anchor}" name="#{anchor}">#{name}</a>}.html_safe
     end
 
     def get_format

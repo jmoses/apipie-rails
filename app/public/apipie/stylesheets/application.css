@@ -14,3 +14,7 @@ body {
   text-decoration: none;
   color: inherit;
 }
+
+.anchor:focus {
+  outline: none;
+}
