@@ -49,16 +49,6 @@ module Apipie
     end
 
     private
-    def full_name_to_anchor(name)
-      (name || "").gsub(/\W/, '_').gsub(/_$/, '')
-    end
-
-    def anchor_link(name)
-      anchor = full_name_to_anchor(name)
-
-      %Q{<a class="anchor" href="##{anchor}" name="#{anchor}">#{name}</a>}.html_safe
-    end
-
     def get_format
       params[:format] = :html unless params[:version].sub!('.html', '').nil?
       params[:format] = :json unless params[:version].sub!('.json', '').nil?

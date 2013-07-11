@@ -90,6 +90,7 @@ module Apipie
       if validator.is_a? Apipie::Validator::HashValidator
         {
           :name => name.to_s,
+          :anchor => anchor,
           :full_name => full_name,
           :description => desc,
           :required => required,
@@ -102,6 +103,7 @@ module Apipie
       else
         {
           :name => name.to_s,
+          :anchor => anchor,
           :full_name => full_name,
           :description => desc,
           :required => required,
@@ -196,6 +198,9 @@ module Apipie
       end
     end
 
+    def anchor
+      (full_name.to_s || "").gsub(/\W/, '_').gsub(/_$/, '')
+    end
   end
 
 end

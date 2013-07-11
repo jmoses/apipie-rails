@@ -3,7 +3,7 @@
 <% params.each do |param| %>
   <tr style='background-color:rgb(<%= "#{col},#{col},#{col}" %>);'>
     <td>
-      <strong><%= anchor_link param[:full_name] %></a></strong><br>
+      <strong><%= link_to param[:full_name], "##{param[:anchor]}", name: param[:anchor], class: 'anchor' %></strong><br/>
       <small>
         <%= param[:required] ? 'required' : 'optional' %>
         <%= param[:allow_nil] ? ', nil allowed' : '' %>
