@@ -8,7 +8,7 @@ module Apipie
   # validator - Validator::BaseValidator subclass
   class ParamDescription
 
-    attr_reader :method_description, :name, :desc, :allow_nil, :validator, :options
+    attr_reader :method_description, :name, :desc, :allow_nil, :validator, :options, :validations
 
     attr_accessor :parent, :required
 
@@ -57,6 +57,8 @@ module Apipie
           Validator::BaseValidator.find(self, validator, @options, block)
         raise "Validator not found." unless validator
       end
+
+      @validations = Array(options[:validations]).map {|v| concern_subst(Apipie.markup_to_html(v)) }
     end
 
     def validate(value)
@@ -94,7 +96,8 @@ module Apipie
           :allow_nil => allow_nil,
           :validator => validator.to_s,
           :expected_type => validator.expected_type,
-          :params => validator.hash_params_ordered.map(&:to_json)
+          :params => validator.hash_params_ordered.map(&:to_json),
+          :validations => validations
         }
       else
         {
@@ -104,7 +107,8 @@ module Apipie
           :required => required,
           :allow_nil => allow_nil,
           :validator => validator.to_s,
-          :expected_type => validator.expected_type
+          :expected_type => validator.expected_type,
+          :validations => validations
         }
       end
     end
