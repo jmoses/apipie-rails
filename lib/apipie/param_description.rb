@@ -51,11 +51,9 @@ module Apipie
 
       action_awareness
 
-      @validator = nil
-      unless validator.nil?
-        @validator =
-          Validator::BaseValidator.find(self, validator, @options, block)
-        raise "Validator not found." unless validator
+      if validator
+        @validator = Validator::BaseValidator.find(self, validator, @options, block)
+        raise "Validator for #{validator} not found." unless @validator
       end
 
       @validations = Array(options[:validations]).map {|v| concern_subst(Apipie.markup_to_html(v)) }
@@ -186,16 +184,16 @@ module Apipie
     end
 
     def concern_subst(string)
-      return if string.nil?
+      return string if string.nil? or !method_description.from_concern?
+
       original = string
-      if method_description.from_concern?
-        string = ":#{original}" if original.is_a? Symbol
-        ret = method_description.resource.controller._apipie_perform_concern_subst(string)
-        ret = ret.to_sym if original.is_a? Symbol
-        ret
-      else
-        string
-      end
+      string = ":#{original}" if original.is_a? Symbol
+
+      replaced = method_description.resource.controller._apipie_perform_concern_subst(string)
+
+      return original if replaced == string
+      return replaced.to_sym if original.is_a? Symbol
+      return replaced
     end
 
     def anchor

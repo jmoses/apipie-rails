@@ -12,6 +12,63 @@ describe Apipie::ParamDescription do
     Apipie::MethodDescription.new(:show, resource_desc, dsl_data)
   end
 
+  describe "validator selection" do
+
+    it "should allow nil validator" do
+      param = Apipie::ParamDescription.new(method_desc, :hidden_param, nil)
+      param.validator.should be_nil
+    end
+
+    it "should throw exception on unknown validator" do
+      proc { Apipie::ParamDescription.new(method_desc, :param, :unknown) }.should raise_error(RuntimeError, /Validator.*not found/)
+    end
+
+    it "should pick type validator" do
+      Apipie::Validator::BaseValidator.should receive(:find).and_return(:validator_instance)
+      param = Apipie::ParamDescription.new(method_desc, :param, String)
+      param.validator.should == :validator_instance
+    end
+
+  end
+
+  describe "concern substitution" do
+
+    let(:concern_dsl_data) { dsl_data.merge(:from_concern => true) }
+
+    let(:concern_resource_desc) do
+      Apipie::ResourceDescription.new(ConcernsController, "concerns")
+    end
+
+    let(:concern_method_desc) do
+      Apipie::MethodDescription.new(:show, concern_resource_desc, concern_dsl_data)
+    end
+
+    it "should replace string parameter name with colon prefix" do
+      param = Apipie::ParamDescription.new(concern_method_desc, ":string_subst", String)
+      param.name.should == "string"
+    end
+
+    it "should replace symbol parameter name" do
+      param = Apipie::ParamDescription.new(concern_method_desc, :concern, String)
+      param.name.should == :user
+    end
+
+    it "should keep original value for strings without colon prefixes" do
+      param = Apipie::ParamDescription.new(concern_method_desc, "string_subst", String)
+      param.name.should == "string_subst"
+    end
+
+    it "should keep the original value when a string can't be replaced" do
+      param = Apipie::ParamDescription.new(concern_method_desc, ":param", String)
+      param.name.should == ":param"
+    end
+
+    it "should keep the original value when a symbol can't be replaced" do
+      param = Apipie::ParamDescription.new(concern_method_desc, :param, String)
+      param.name.should == :param
+    end
+  end
+
 
   describe "required_by_default config option" do
     context "parameters required by default" do
